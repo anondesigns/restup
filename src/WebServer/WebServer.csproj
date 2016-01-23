@@ -172,6 +172,8 @@
     <Compile Include="Rest\RestControllerMethodExecutor.cs" />
     <Compile Include="RestWebServer.cs" />
     <Compile Include="Rest\RestResponseToHttpResponseConverter.cs" />
+    <Compile Include="StaticWebServer.cs" />
+    <Compile Include="Static\StaticFileRequestHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />

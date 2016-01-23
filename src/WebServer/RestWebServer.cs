@@ -3,6 +3,8 @@ using Devkoes.Restup.WebServer.Models.Contracts;
 using Devkoes.Restup.WebServer.Rest;
 using System;
 using System.Threading.Tasks;
+using Devkoes.Restup.WebServer.Models.Schemas;
+using Devkoes.Restup.WebServer.Static;
 
 namespace Devkoes.Restup.WebServer
 {
@@ -10,6 +12,7 @@ namespace Devkoes.Restup.WebServer
     {
         private RestControllerRequestHandler _requestHandler;
         private RestResponseToHttpResponseConverter _restToHttpConverter;
+        private StaticFileRequestHandler _staticFileRequestHandler;
 
         public RestWebServer(int port, string urlPrefix) : base(port)
         {
@@ -17,6 +20,7 @@ namespace Devkoes.Restup.WebServer
 
             _requestHandler = new RestControllerRequestHandler(fixedFormatUrlPrefix);
             _restToHttpConverter = new RestResponseToHttpResponseConverter();
+            _staticFileRequestHandler = new StaticFileRequestHandler();
         }
 
         public RestWebServer(int port) : this(port, null) { }
@@ -41,6 +45,11 @@ namespace Devkoes.Restup.WebServer
         internal override async Task<IHttpResponse> HandleRequest(HttpRequest request)
         {
             var restResponse = await _requestHandler.HandleRequest(request);
+
+            if (request.Method == HttpMethod.GET && restResponse.StatusCode != 200)
+            {
+                return await _staticFileRequestHandler.HandleRequest(request);
+            }
 
             var httpResponse = restResponse.Visit(_restToHttpConverter, request);
 
