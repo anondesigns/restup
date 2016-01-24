@@ -173,6 +173,7 @@
     <Compile Include="RestWebServer.cs" />
     <Compile Include="Rest\RestResponseToHttpResponseConverter.cs" />
     <Compile Include="StaticWebServer.cs" />
+    <Compile Include="Static\MimeMap.cs" />
     <Compile Include="Static\StaticFileRequestHandler.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -12,43 +12,36 @@ namespace Devkoes.Restup.WebServer.Static
 {
     class StaticFileRequestHandler
     {
-        private string pathToServe = ".\\wwwroot\\";
+        private readonly DirectoryInfo _pathToServe = new DirectoryInfo(".\\wwwroot\\");
 
         public Task<IHttpResponse> HandleRequest(HttpRequest request)
         {
-            var filePath = pathToServe + request.Uri;
+            var uriPath = request.Uri.ToString();
 
-            if (request.Uri.ToString() == "/")
+            if (uriPath.Contains("&"))
             {
-                filePath = pathToServe + "/index.html";
+                uriPath = uriPath.Split('&').First();
             }
 
-            if (!File.Exists(filePath))
+            if (uriPath == "/")
+            {
+                uriPath = "index.html";
+            }
+
+            var fileUri = new Uri(_pathToServe.FullName + uriPath);
+
+            if (!fileUri.IsFile)
             {
                 return FileNotFoundResponse();
             }
 
-            var file = File.OpenText(filePath);
+            var file = File.OpenText(fileUri.LocalPath);
             var fileString = file.ReadToEnd();
             file.Dispose();
 
-            var contentType = "text/html";
+            var mimeType = MimeMap.ContentTypeFromPath(fileUri.LocalPath);
 
-
-            if (filePath.Contains(".css"))
-            {
-                contentType = "text/css";
-            }
-            else if (filePath.Contains(".ico"))
-            {
-                contentType = "image/x-icon";
-            }
-            else if (filePath.Contains(".js"))
-            {
-                contentType = "application/javascript";
-            }
-
-            return GetHttpResponseForFile(fileString, contentType);
+            return GetHttpResponseForFile(fileString, mimeType);
         }
 
         private Task<IHttpResponse> FileNotFoundResponse()
