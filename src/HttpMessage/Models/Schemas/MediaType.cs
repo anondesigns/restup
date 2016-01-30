@@ -9,6 +9,7 @@
         ICO,
         JPG,
         JPEG,
+        JS,
         JSON,
         PNG,
         TXT,

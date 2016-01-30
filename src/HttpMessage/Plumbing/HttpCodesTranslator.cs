@@ -17,6 +17,7 @@ namespace Devkoes.HttpMessage.Plumbing
             [MediaType.ICO] = "image/x-icon",
             [MediaType.JPG] = "image/jpeg",
             [MediaType.JPEG] = "image/jpeg",
+            [MediaType.JS] = "application/x-javascript",
             [MediaType.JSON] = "application/json",
             [MediaType.PNG] = "image/png",
             [MediaType.TXT] = "text/plain",
