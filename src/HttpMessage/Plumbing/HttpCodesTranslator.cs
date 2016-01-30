@@ -1,4 +1,5 @@
-﻿using Devkoes.HttpMessage.Models.Schemas;
+﻿using System;
+using Devkoes.HttpMessage.Models.Schemas;
 using System.Collections.Generic;
 
 namespace Devkoes.HttpMessage.Plumbing
@@ -10,7 +11,15 @@ namespace Devkoes.HttpMessage.Plumbing
         private readonly IDictionary<MediaType, string> _mediaTypeTexts = new Dictionary<MediaType, string>()
         {
             [MediaType.Unsupported] = "",
+            [MediaType.CSS] = "text/css",
+            [MediaType.HTM] = "text/html",
+            [MediaType.HTML] = "text/html",
+            [MediaType.ICO] = "image/x-icon",
+            [MediaType.JPG] = "image/jpeg",
+            [MediaType.JPEG] = "image/jpeg",
             [MediaType.JSON] = "application/json",
+            [MediaType.PNG] = "image/png",
+            [MediaType.TXT] = "text/plain",
             [MediaType.XML] = "application/xml"
         };
 
@@ -92,6 +101,14 @@ namespace Devkoes.HttpMessage.Plumbing
             }
 
             return MediaType.Unsupported;
+        }
+
+        public MediaType GetMediaTypeForFileExtension(string value)
+        {
+            value = value.Replace(".", "");
+
+            MediaType mediaType;
+            return Enum.TryParse(value, true, out mediaType) ? mediaType : MediaType.TXT;
         }
     }
 }

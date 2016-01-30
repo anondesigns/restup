@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Devkoes.Restup.WebServer.Http;
-using Devkoes.Restup.WebServer.Models.Contracts;
-using Devkoes.Restup.WebServer.Models.Schemas;
+using Devkoes.HttpMessage;
+using Devkoes.HttpMessage.Models.Schemas;
+using Devkoes.HttpMessage.Plumbing;
 
 namespace Devkoes.Restup.WebServer.Static
 {
@@ -14,7 +14,7 @@ namespace Devkoes.Restup.WebServer.Static
     {
         private readonly DirectoryInfo _pathToServe = new DirectoryInfo(".\\wwwroot\\");
 
-        public Task<IHttpResponse> HandleRequest(HttpRequest request)
+        public Task<HttpServerResponse> HandleRequest(HttpServerRequest request)
         {
             var uriPath = request.Uri.ToString();
 
@@ -39,31 +39,24 @@ namespace Devkoes.Restup.WebServer.Static
             var fileString = file.ReadToEnd();
             file.Dispose();
 
-            var mimeType = MimeMap.ContentTypeFromPath(fileUri.LocalPath);
+            var fileExtension = Path.GetExtension(fileUri.LocalPath);
+            var mediaType = HttpCodesTranslator.Default.GetMediaTypeForFileExtension(fileExtension);
 
-            return GetHttpResponseForFile(fileString, mimeType);
+            return GetHttpResponseForFile(fileString, mediaType);
         }
 
-        private Task<IHttpResponse> FileNotFoundResponse()
+        private Task<HttpServerResponse> FileNotFoundResponse()
         {
-
-            var header = "HTTP/1.1 404 Not Found\r\n" +
-                        $"Content-Length: 0\r\n" +
-                        "Connection: close\r\n\r\n";
-
-            return Task.Factory.StartNew<IHttpResponse>(() => new HttpResponse(header, Encoding.UTF8.GetBytes(header)));
+            return Task.Factory.StartNew(() => HttpServerResponse.Create(HttpResponseStatus.NotFound));
         }
 
-        private Task<IHttpResponse> GetHttpResponseForFile(string file, string contentType)
+        private Task<HttpServerResponse> GetHttpResponseForFile(string data, MediaType mediaType)
         {
-            var header = "HTTP/1.1 200 OK\r\n" +
-                        $"Content-Length: {file.Length}\r\n" +
-                        $"Content-Type: {contentType}\r\n" +
-                        "Connection: close\r\n\r\n";
+            var response = HttpServerResponse.Create(HttpResponseStatus.OK);
+            response.Content = Encoding.UTF8.GetBytes(data);
+            response.ContentType = mediaType;
 
-            var res = header + file;
-
-            return Task.Factory.StartNew<IHttpResponse>(() => new HttpResponse(res, Encoding.UTF8.GetBytes(res)));
+            return Task.Factory.StartNew(() => response);
         }
     }
 }

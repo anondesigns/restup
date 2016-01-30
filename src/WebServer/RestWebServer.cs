@@ -13,8 +13,9 @@ namespace Devkoes.Restup.WebServer
     {
         private RestControllerRequestHandler _requestHandler;
         private RestToHttpResponseConverter _restToHttpConverter;
-        private StaticFileRequestHandler _staticFileRequestHandler;
         private RestServerRequestFactory _restServerRequestFactory;
+
+        private StaticFileRequestHandler _staticFileRequestHandler;
 
         public RestWebServer(int port, string urlPrefix) : base(port)
         {
@@ -23,6 +24,7 @@ namespace Devkoes.Restup.WebServer
             _restServerRequestFactory = new RestServerRequestFactory();
             _requestHandler = new RestControllerRequestHandler(fixedFormatUrlPrefix);
             _restToHttpConverter = new RestToHttpResponseConverter();
+
             _staticFileRequestHandler = new StaticFileRequestHandler();
         }
 
@@ -56,7 +58,7 @@ namespace Devkoes.Restup.WebServer
                 return await _staticFileRequestHandler.HandleRequest(request);
             }
 
-            var httpResponse = restResponse.Visit(_restToHttpConverter, request);
+            var httpResponse = restResponse.Visit(_restToHttpConverter, restServerRequest);
 
             return httpResponse;
         }
