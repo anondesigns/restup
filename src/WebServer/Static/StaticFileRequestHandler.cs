@@ -18,9 +18,9 @@ namespace Devkoes.Restup.WebServer.Static
         {
             var uriPath = request.Uri.ToString();
 
-            if (uriPath.Contains("&"))
+            if (uriPath.Contains("?"))
             {
-                uriPath = uriPath.Split('&').First();
+                uriPath = uriPath.Split('?').First();
             }
 
             if (uriPath == "/")
